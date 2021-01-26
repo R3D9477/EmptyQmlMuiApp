@@ -10,7 +10,7 @@ class BGRMain: public QObject
 
     Q_OBJECT
 
-public slots:
+signals:
 
     //...
     //...
@@ -20,7 +20,7 @@ public:
     explicit BGRMain(QObject *parent = nullptr);
     virtual ~BGRMain();
 
-signals:
+public slots:
 
     //...
     //...
