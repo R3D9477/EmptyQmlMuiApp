@@ -1,0 +1,5 @@
+bin
+Bin
+*.autosave
+*.pro.user
+.directory

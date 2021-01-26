@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>lang/fc_en.json</file>
+        <file>lang/fc_ru.json</file>
+        <file>lang/tr_ru.qm</file>
+        <file>lang/tr_ru.ts</file>
+        <file>lang/fc_es.json</file>
+        <file>lang/tr_es.ts</file>
+        <file>lang/tr_es.qm</file>
+    </qresource>
+</RCC>
