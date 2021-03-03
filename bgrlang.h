@@ -12,11 +12,16 @@
 #include <QDebug>
 #include <QQmlEngine>
 
+#define DEF_TS_FOLDER ":/lang"
+
 class BGRLang : public QObject
 {
     std::vector<QString> langs;
 
     Q_OBJECT
+
+    int defLangId;
+    QString defTsFolder;
 
     int currLangId = 0;
     QTranslator *translator;
@@ -25,7 +30,7 @@ class BGRLang : public QObject
 
 public:
 
-    explicit BGRLang(QQmlEngine *engine, std::initializer_list<QString> langs);
+    explicit BGRLang(QQmlEngine *engine, const std::initializer_list<QString> langs, const int defLangIndex = 0, const QString& tsFolder = DEF_TS_FOLDER);
     virtual ~BGRLang() = default;
 
     Q_INVOKABLE QVariant getFont(const QString& fontId);

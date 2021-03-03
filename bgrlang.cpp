@@ -1,7 +1,10 @@
 #include "bgrlang.h"
 
-BGRLang::BGRLang(QQmlEngine *engine, std::initializer_list<QString> langs)
+BGRLang::BGRLang(QQmlEngine *engine, const std::initializer_list<QString> langs, const int defLangIndex, const QString& tsFolder)
 {
+    this->defLangId = ( defLangIndex < int(langs.size()) ) ? defLangIndex : 0;
+    this->defTsFolder = tsFolder;
+
     translator = new QTranslator(this);
     m_engine = engine;
     for (auto l: langs) this->langs.push_back(l);
@@ -13,7 +16,9 @@ QVariant BGRLang::getFont(const QString& fontId)
     font.setFamily(font.defaultFamily());
 
     if (!this->fontConfig.isEmpty()) {
+
         auto jobj = this->fontConfig.object();
+
         if (jobj.contains(fontId)) {
             auto fcLang = jobj[fontId].toObject();
             if (fcLang.contains("family"))
@@ -32,9 +37,10 @@ QVariant BGRLang::getFont(const QString& fontId)
 
 void BGRLang::loadFontConfig()
 {
-    QFile cfFile(QString(":/lang/fc_%1.json").arg(getLangCodebyId(this->currLangId)));
+    QFile cfFile(QString("%1/fc_%2.json").arg(this->defTsFolder, getLangCodebyId(this->currLangId)));
 
     if (cfFile.open(QIODevice::ReadOnly)) {
+
         QJsonParseError jerr;
         QJsonDocument fcJsBuff = QJsonDocument::fromJson(cfFile.readAll(), &jerr);
 
@@ -48,15 +54,17 @@ void BGRLang::loadFontConfig()
     this->fontConfig = QJsonDocument();
 }
 
-void BGRLang::selectLanguage(const int lang_id, const QString& lang_code) {
+void BGRLang::selectLanguage(const int lang_id, const QString& lang_code)
+{
     if (this->langs.size() > 0) {
-        if (lang_code == this->langs[0])
-            qGuiApp->removeTranslator(this->translator);
-        else if (translator->load(QString("tr_%1").arg(lang_code), ":/lang"))
-            qApp->installTranslator(this->translator);
+
+        if (lang_code == this->langs[this->defLangId]) qGuiApp->removeTranslator(this->translator);
+        else if (translator->load(QString("tr_%1").arg(lang_code), this->defTsFolder)) qApp->installTranslator(this->translator);
+
         this->currLangId = lang_id;
         this->loadFontConfig();
         this->m_engine->retranslate();
+
         emit languageChanged();
     }
 }
