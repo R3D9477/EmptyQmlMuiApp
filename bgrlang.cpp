@@ -5,9 +5,10 @@ BGRLang::BGRLang(QQmlEngine *engine, const std::initializer_list<QString> langs,
     this->defLangId = ( defLangIndex < int(langs.size()) ) ? defLangIndex : 0;
     this->defTsFolder = tsFolder;
 
-    translator = new QTranslator(this);
-    m_engine = engine;
-    for (auto l: langs) this->langs.push_back(l);
+    this->translator = new QTranslator(this);
+    this->m_engine = engine;
+
+    for (auto& l: langs) this->langs.push_back(l);
 }
 
 QVariant BGRLang::getFont(const QString& fontId)
