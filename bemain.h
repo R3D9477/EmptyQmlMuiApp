@@ -1,9 +1,9 @@
-#ifndef BGRMAIN_H
-#define BGRMAIN_H
+#ifndef BEMAIN_H
+#define BEMAIN_H
 
 #include <QObject>
 
-class BGRMain: public QObject
+class BEMain: public QObject
 {
     //...
     //...
@@ -17,8 +17,8 @@ signals:
 
 public:
 
-    explicit BGRMain(QObject *parent = nullptr);
-    virtual ~BGRMain();
+    explicit BEMain(QObject *parent = nullptr);
+    virtual ~BEMain();
 
 public slots:
 
@@ -31,4 +31,4 @@ private:
     //...
 };
 
-#endif // BGRMAIN_H
+#endif // BEMAIN_H

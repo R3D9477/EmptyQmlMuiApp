@@ -1,6 +1,6 @@
-#include "bgrlang.h"
+#include "belang.h"
 
-BGRLang::BGRLang(QQmlEngine *engine, const std::initializer_list<QString> langs, const int defLangIndex, const QString& tsFolder)
+BELang::BELang(QQmlEngine *engine, const std::initializer_list<QString> langs, const int defLangIndex, const QString& tsFolder)
 {
     this->defLangId = ( defLangIndex < int(langs.size()) ) ? defLangIndex : 0;
     this->defTsFolder = tsFolder;
@@ -11,7 +11,7 @@ BGRLang::BGRLang(QQmlEngine *engine, const std::initializer_list<QString> langs,
     for (auto& l: langs) this->langs.push_back(l);
 }
 
-QVariant BGRLang::getFont(const QString& fontId)
+QVariant BELang::getFont(const QString& fontId)
 {
     QFont font;
     font.setFamily(font.defaultFamily());
@@ -36,7 +36,7 @@ QVariant BGRLang::getFont(const QString& fontId)
     return font;
 }
 
-void BGRLang::loadFontConfig()
+void BELang::loadFontConfig()
 {
     QFile cfFile(QString("%1/fc_%2.json").arg(this->defTsFolder, getLangCodebyId(this->currLangId)));
 
@@ -55,7 +55,7 @@ void BGRLang::loadFontConfig()
     this->fontConfig = QJsonDocument();
 }
 
-void BGRLang::selectLanguage(const int lang_id, const QString& lang_code)
+void BELang::selectLanguage(const int lang_id, const QString& lang_code)
 {
     if (this->langs.size() > 0) {
 

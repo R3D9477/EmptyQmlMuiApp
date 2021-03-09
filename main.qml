@@ -18,7 +18,7 @@ Window {
 
             Connections {
                 target: btnSetEnLang
-                function onClicked() { bgrLang.selectLanguage("en") }
+                function onClicked() { beLang.selectLanguage("en") }
             }
         }
 
@@ -28,7 +28,7 @@ Window {
 
             Connections {
                 target: btnSetEsLang
-                function onClicked() { bgrLang.selectLanguage("es") }
+                function onClicked() { beLang.selectLanguage("es") }
             }
         }
 
@@ -38,7 +38,7 @@ Window {
 
             Connections {
                 target: btnSetRuLang
-                function onClicked() { bgrLang.selectLanguage("ru") }
+                function onClicked() { beLang.selectLanguage("ru") }
             }
         }
     }
@@ -52,7 +52,7 @@ Window {
         text: qsTr("Hello World!")
         horizontalAlignment: Text.AlignHCenter
 
-        Component.onCompleted: font = bgrLang.getFont("label")
-        Connections { target: bgrLang; function onLanguageChanged () { text1.font = bgrLang.getFont("label"); } }
+        Component.onCompleted: font = beLang.getFont("label")
+        Connections { target: beLang; function onLanguageChanged () { text1.font = beLang.getFont("label"); } }
     }
 }

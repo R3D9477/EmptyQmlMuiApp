@@ -1,5 +1,5 @@
-#ifndef BGRLANG_H
-#define BGRLANG_H
+#ifndef BELANG_H
+#define BELANG_H
 
 #include <QtCore>
 #include <QDebug>
@@ -14,7 +14,7 @@
 
 #define DEF_TS_FOLDER ":/lang"
 
-class BGRLang : public QObject
+class BELang : public QObject
 {
     std::vector<QString> langs;
 
@@ -30,8 +30,8 @@ class BGRLang : public QObject
 
 public:
 
-    explicit BGRLang(QQmlEngine *engine, const std::initializer_list<QString> langs, const int defLangIndex = 0, const QString& tsFolder = DEF_TS_FOLDER);
-    virtual ~BGRLang() = default;
+    explicit BELang(QQmlEngine *engine, const std::initializer_list<QString> langs, const int defLangIndex = 0, const QString& tsFolder = DEF_TS_FOLDER);
+    virtual ~BELang() = default;
 
     Q_INVOKABLE QVariant getFont(const QString& fontId);
     Q_INVOKABLE void selectLanguage(const int lang_id) { selectLanguage(lang_id, getLangCodebyId(lang_id)); }
@@ -50,4 +50,4 @@ private:
     void loadFontConfig();
 };
 
-#endif // BGRLANG_H
+#endif // BELANG_H

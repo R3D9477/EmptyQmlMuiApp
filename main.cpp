@@ -2,8 +2,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "bgrmain.h"
-#include "bgrlang.h"
+#include "bemain.h"
+#include "belang.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,11 +12,11 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
-    BGRMain bgrMain;
-    engine.rootContext()->setContextProperty("bgrMain", &bgrMain);
+    BEMain beMain;
+    engine.rootContext()->setContextProperty("beMain", &beMain);
 
-    BGRLang bgrLang(&engine, {"en", "es", "ru"});
-    engine.rootContext()->setContextProperty("bgrLang", &bgrLang);
+    BELang beLang(&engine, {"en","es","ru"});
+    engine.rootContext()->setContextProperty("beLang", &beLang);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
