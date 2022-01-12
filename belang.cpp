@@ -9,6 +9,8 @@ BELang::BELang(QQmlEngine *engine, const std::initializer_list<QString> langs, c
     this->m_engine = engine;
 
     for (auto& l: langs) this->langs.push_back(l);
+
+    this->loadFontConfig();
 }
 
 QVariant BELang::getFont(const QString& fontId)

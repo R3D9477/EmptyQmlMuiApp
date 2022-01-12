@@ -3,3 +3,4 @@ Bin
 *.autosave
 *.pro.user
 .directory
+*.user

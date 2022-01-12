@@ -37,14 +37,17 @@ public:
     Q_INVOKABLE void selectLanguage(const int lang_id) { selectLanguage(lang_id, getLangCodebyId(lang_id)); }
     Q_INVOKABLE void selectLanguage(const QString& lang_code) { selectLanguage(getLangIdByCode(lang_code), lang_code); }
 
+    Q_INVOKABLE int getCurrLangId () const { return this->currLangId; }
+    Q_INVOKABLE QString getCurrLangCode() const { return getLangCodebyId(this->currLangId); }
+
 signals:
 
     void languageChanged();
 
 private:
 
-    inline QString getLangCodebyId(const size_t langId) { return (langId > langs.size()) ? "" : langs[langId] ; }
-    inline int getLangIdByCode(const QString& langCode) { int i = -1; for(auto lc: langs) { i++; if (lc == langCode) break; } return i; }
+    inline QString getLangCodebyId(const size_t langId) const { return (langId > langs.size()) ? "" : langs[langId] ; }
+    inline int getLangIdByCode(const QString& langCode) const { int i = -1; for(auto lc: langs) { i++; if (lc == langCode) break; } return i; }
 
     void selectLanguage(const int lang_id, const QString& lang_code);
     void loadFontConfig();
