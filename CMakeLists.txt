@@ -112,10 +112,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GCC
     -Wunreachable-code
     -Werror
     -Wpedantic
+    -Wno-unused-value
     -Wno-unused-result
     -Wno-unused-function
-    -Wno-unused-value
     -Wno-unused-parameter
+    -Wno-ignored-pragmas
   )
   list(APPEND SAFETY_FLAGS
     -fno-lto
