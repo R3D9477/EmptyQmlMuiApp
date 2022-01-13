@@ -124,6 +124,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GCC
     -D_FORTIFY_SOURCE=2
   )
   if(QT_FOUND)
+    list(APPEND SAFETY_FLAGS
+      -Wno-padded
+      -Wno-redundant-parens
+      -Wno-extra-semi-stmt
+    )
     if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
       list(APPEND SAFETY_FLAGS
         -Wno-missing-prototypes
@@ -170,7 +175,7 @@ if(NOT WIN32)
   endif()
 endif()
 
-#target_compile_options(${OUTPUT_NAME} PRIVATE ${SAFETY_FLAGS})
+target_compile_options(${OUTPUT_NAME} PRIVATE ${SAFETY_FLAGS})
 
 #------------------------------------------------------------------------------------------------------
 # Add VCRuntime libs if needed

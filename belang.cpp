@@ -1,14 +1,15 @@
 #include "belang.h"
 
-BELang::BELang(QQmlEngine *engine, const std::initializer_list<QString> langs, const int defLangIndex, const QString& tsFolder)
+BELang::BELang(QQmlEngine *engine, const std::initializer_list<QString> langs,
+    const size_t defLangIndex, const QString& tsFolder)
 {
-    this->defLangId = ( defLangIndex < int(langs.size()) ) ? defLangIndex : 0;
-    this->defTsFolder = tsFolder;
+    this->m_defLangId = ( defLangIndex < langs.size() ) ? defLangIndex : 0;
+    this->m_defTsFolder = tsFolder;
 
-    this->translator = new QTranslator(this);
+    this->m_translator = new QTranslator(this);
     this->m_engine = engine;
 
-    for (auto& l: langs) this->langs.push_back(l);
+    for (auto& l: langs) this->m_langs.push_back(l);
 
     this->loadFontConfig();
 }
@@ -18,9 +19,9 @@ QVariant BELang::getFont(const QString& fontId)
     QFont font;
     font.setFamily(font.defaultFamily());
 
-    if (!this->fontConfig.isEmpty()) {
+    if (!this->m_fontConfig.isEmpty()) {
 
-        auto jobj = this->fontConfig.object();
+        auto jobj = this->m_fontConfig.object();
 
         if (jobj.contains(fontId)) {
             auto fcLang = jobj[fontId].toObject();
@@ -40,7 +41,7 @@ QVariant BELang::getFont(const QString& fontId)
 
 void BELang::loadFontConfig()
 {
-    QFile cfFile(QString("%1/fc_%2.json").arg(this->defTsFolder, getLangCodebyId(this->currLangId)));
+    QFile cfFile(QString("%1/fc_%2.json").arg(this->m_defTsFolder, getLangCodebyId(this->m_currLangId)));
 
     if (cfFile.open(QIODevice::ReadOnly)) {
 
@@ -48,23 +49,23 @@ void BELang::loadFontConfig()
         QJsonDocument fcJsBuff = QJsonDocument::fromJson(cfFile.readAll(), &jerr);
 
         if (jerr.error == QJsonParseError::NoError)
-            this->fontConfig = fcJsBuff;
+            this->m_fontConfig = fcJsBuff;
 
         cfFile.close();
         return;
     }
 
-    this->fontConfig = QJsonDocument();
+    this->m_fontConfig = QJsonDocument();
 }
 
-void BELang::selectLanguage(const int lang_id, const QString& lang_code)
+void BELang::selectLanguage(const size_t lang_id, const QString& lang_code)
 {
-    if (this->langs.size() > 0) {
+    if (this->m_langs.size() > 0) {
 
-        if (lang_code == this->langs[this->defLangId]) qGuiApp->removeTranslator(this->translator);
-        else if (translator->load(QString("tr_%1").arg(lang_code), this->defTsFolder)) qApp->installTranslator(this->translator);
+        if (lang_code == this->m_langs[this->m_defLangId]) qGuiApp->removeTranslator(this->m_translator);
+        else if (m_translator->load(QString("tr_%1").arg(lang_code), this->m_defTsFolder)) qApp->installTranslator(this->m_translator);
 
-        this->currLangId = lang_id;
+        this->m_currLangId = lang_id;
         this->loadFontConfig();
         this->m_engine->retranslate();
 
