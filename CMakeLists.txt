@@ -6,13 +6,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 get_filename_component(OUTPUT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(${OUTPUT_NAME} VERSION 0.1 LANGUAGES CXX)
 
+# - DEFINE THE LIST OF THE SOURCES BELOW IN VARIABLE SCAN_SOURCES_FOLDER
+# - ATTACH EXTERNAL LIBRARIES AT THE BOTTOM THAT CONFIG
 list(APPEND SCAN_SOURCES_FOLDER ".")
 
 #------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
 # Scan project's sources folders.
 
-set(SOURCE_EXTENSIONS *.cc *.cpp *.cxx *.c++ *.h *.hh *.hpp *.hxx *.h++ *.tcc *.tpp *.ipp *.qrc)
+set(SOURCE_EXTENSIONS *.c *.cc *.cpp *.cxx *.c++ *.h *.hh *.hpp *.hxx *.h++ *.tcc *.tpp *.ipp *.qrc)
 
 function(get_sources_from_dir DEST_SRCs_VAR DEST_INCs_VAR SRC_DIR)
   foreach(SRC_EXT ${SOURCE_EXTENSIONS})
@@ -207,4 +209,8 @@ target_add_boost(${OUTPUT_NAME})
 
 #------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
-# My own libraries and settings below...
+# ATTACH EXTERNAL LIBRARIES BELOW...
+
+#...
+#...
+#...
