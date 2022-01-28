@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#------------------------------------------------------------------------------------------------------
-
 get_filename_component(OUTPUT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(${OUTPUT_NAME} VERSION 0.1 LANGUAGES CXX)
 
+list(APPEND SCAN_SOURCES_FOLDER ".")
+
 #------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
-# By default add all local sources into the project's tree.
+# Scan project's sources folders.
 
 set(SOURCE_EXTENSIONS *.cc *.cpp *.cxx *.c++ *.h *.hh *.hpp *.hxx *.h++ *.tcc *.tpp *.ipp *.qrc)
 
@@ -24,7 +24,9 @@ function(get_sources_from_dir DEST_SRCs_VAR DEST_INCs_VAR SRC_DIR)
   endforeach()
 endfunction()
 
-get_sources_from_dir(PROJECT_SOURCES PROJECT_INCLUDES ".")
+foreach(SRC_FOLDER ${SCAN_SOURCES_FOLDER})
+  get_sources_from_dir(PROJECT_SOURCES PROJECT_INCLUDES ${SRC_FOLDER})
+endforeach()
 
 #------------------------------------------------------------------------------------------------------
 # Add Qt application (if possible).
@@ -35,7 +37,7 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick REQUIRED)
 if(QT_FOUND)
   # Based on default templates of CMakeLists.txt for Qt5 and Qt6
 
-  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick Widgets REQUIRED)
 
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -46,7 +48,7 @@ if(QT_FOUND)
   if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     set(MODULE_NAME "${OUTPUT_NAME}")
     set(OUTPUT_NAME "app${OUTPUT_NAME}")
-    qt_add_executable(${OUTPUT_NAME} ${PROJECT_SOURCES} )
+    qt_add_executable(${OUTPUT_NAME} ${PROJECT_SOURCES})
     file(GLOB_RECURSE MODULE_QMLs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.qml)
     qt_add_qml_module(${OUTPUT_NAME} URI ${MODULE_NAME} VERSION 1.0 QML_FILES ${MODULE_QMLs})
     # Define target properties for Android with Qt 6 as:
@@ -63,10 +65,8 @@ if(QT_FOUND)
     endif()
   endif()
 
-  target_compile_definitions(${OUTPUT_NAME}
-    PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-  target_link_libraries(${OUTPUT_NAME}
-    PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
+  target_compile_definitions(${OUTPUT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+  target_link_libraries(${OUTPUT_NAME} PUBLIC Qt::Core Qt::Quick Qt::Widgets)
 
   set_target_properties(${OUTPUT_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER "com.${OUTPUT_NAME}"
