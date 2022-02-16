@@ -18,12 +18,18 @@ set(SOURCE_EXTENSIONS *.c *.cc *.cpp *.cxx *.c++ *.h *.hh *.hpp *.hxx *.h++ *.tc
 
 function(get_sources_from_dir DEST_SRCs_VAR DEST_INCs_VAR SRC_DIR)
   foreach(SRC_EXT ${SOURCE_EXTENSIONS})
-    file(GLOB DIR_SRCs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${SRC_DIR}/${SRC_EXT}")
-    list(APPEND ${DEST_SRCs_VAR} ${DIR_SRCs})
-    set(${DEST_SRCs_VAR} ${${DEST_SRCs_VAR}} PARENT_SCOPE)
-    list(APPEND ${DEST_INCs_VAR} ${SRC_DIR})
-    set(${DEST_INCs_VAR} ${${DEST_INCs_VAR}} PARENT_SCOPE)
+    file(GLOB DIR_SRCs "${SRC_DIR}/${SRC_EXT}")
+    get_filename_component(DIR_SRCs "${DIR_SRCs}" ABSOLUTE)
+    if (NOT "${DIR_SRCs}" IN_LIST ${DEST_SRCs_VAR})
+      list(APPEND ${DEST_SRCs_VAR} ${DIR_SRCs})
+    endif()
+    get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
+    if (NOT "${SRC_DIR}" IN_LIST ${DEST_INCs_VAR})
+      list(APPEND ${DEST_INCs_VAR} ${SRC_DIR})
+    endif()
   endforeach()
+  set(${DEST_SRCs_VAR} ${${DEST_SRCs_VAR}} PARENT_SCOPE)
+  set(${DEST_INCs_VAR} ${${DEST_INCs_VAR}} PARENT_SCOPE)
 endfunction()
 
 foreach(SRC_FOLDER ${SCAN_SOURCES_FOLDER})
@@ -210,6 +216,14 @@ target_add_boost(${OUTPUT_NAME})
 #------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
 # ATTACH EXTERNAL LIBRARIES BELOW...
+
+#...
+#...
+#...
+
+#------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------
+# ADD TESTS BELOW...
 
 #...
 #...
