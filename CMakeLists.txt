@@ -14,30 +14,61 @@ list(APPEND SCAN_SOURCES_FOLDER ".")
 #------------------------------------------------------------------------------------------------------
 # Scan project's sources folders.
 
-set(SOURCE_EXTENSIONS *.c *.cc *.cpp *.cxx *.c++ *.h *.hh *.hpp *.hxx *.h++ *.tcc *.tpp *.ipp *.qrc)
+set(SOURCE_MASK *.c *.cc *.cpp *.cxx *.c++ *.h *.hh *.hpp *.hxx *.h++ *.tcc *.tpp *.ipp *.qrc)
 
 function(get_sources_from_dir DEST_SRCs_VAR DEST_INCs_VAR SRC_DIR)
-  foreach(SRC_EXT ${SOURCE_EXTENSIONS})
-    file(GLOB DIR_SRCs "${SRC_DIR}/${SRC_EXT}")
+  unset(DIR_SRCs_FOUND)
+  foreach(SRC_MASK ${SOURCE_MASK})
+    file(GLOB DIR_SRCs "${SRC_DIR}/${SRC_MASK}")
     if(NOT "${DIR_SRCs}" STREQUAL "")
+      set(DIR_SRCs_FOUND true)
       get_filename_component(DIR_SRCs "${DIR_SRCs}" ABSOLUTE)
       if(NOT "${DIR_SRCs}" IN_LIST ${DEST_SRCs_VAR})
         list(APPEND ${DEST_SRCs_VAR} ${DIR_SRCs})
         set(${DEST_SRCs_VAR} ${${DEST_SRCs_VAR}} PARENT_SCOPE)
       endif()
     endif()
+  endforeach()
+  if(${DIR_SRCs_FOUND})
     get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
     if(NOT "${SRC_DIR}" IN_LIST ${DEST_INCs_VAR})
       list(APPEND ${DEST_INCs_VAR} ${SRC_DIR})
       set(${DEST_INCs_VAR} ${${DEST_INCs_VAR}} PARENT_SCOPE)
     endif()
-  endforeach()
+  endif()
 endfunction()
 
 foreach(SRC_FOLDER ${SCAN_SOURCES_FOLDER})
   get_sources_from_dir(${PROJECT_NAME}_SOURCES ${PROJECT_NAME}_INCLUDES ${SRC_FOLDER})
 endforeach()
 
+#------------------------------------------------------------------------------------------------------
+# Scan project's unit tests sources folder.
+
+enable_testing()
+
+set(SOURCE_MASK_TEST *.c *.cc *.cpp *.cxx *.c++)
+
+function(target_add_tests_from_folder TARGET_NAME FOLDER_PATH)
+  foreach(SRC_MASK_TEST ${SOURCE_MASK_TEST})
+    file(GLOB TEST_SRCs "${FOLDER_PATH}/${SRC_MASK_TEST}")
+    foreach(TEST_SRC ${TEST_SRCs})
+      get_filename_component(TEST_NAME ${TEST_SRC} NAME_WE)
+      set(TEST_TARGET_NAME ${TEST_NAME})
+      add_executable(${TEST_TARGET_NAME} "${TEST_SRC}")
+      target_include_directories(${TEST_TARGET_NAME} PUBLIC ${${TARGET_NAME}_INCLUDES})
+      find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+      target_link_libraries(${TEST_TARGET_NAME} PUBLIC Boost::unit_test_framework)
+      get_target_property(target_type ${TARGET_NAME} TYPE)
+      if (NOT target_type STREQUAL "EXECUTABLE")
+        target_link_libraries(${TEST_TARGET_NAME} PUBLIC ${TARGET_NAME})
+      endif ()
+      add_test(${TEST_TARGET_NAME} ${TEST_TARGET_NAME})
+    endforeach()
+  endforeach()
+endfunction()
+
+#------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
 # Add Qt application (if possible).
 
@@ -58,9 +89,10 @@ if(QT_FOUND)
   if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     set(OUTPUT_NAME "app${OUTPUT_NAME}")
     qt_add_executable(${OUTPUT_NAME} ${${PROJECT_NAME}_SOURCES})
-    target_include_directories(${OUTPUT_NAME} PUBLIC ${${PROJECT_NAME}_INCLUDES})
     file(GLOB_RECURSE MODULE_QMLs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.qml)
-    qt_add_qml_module(${OUTPUT_NAME} URI ${PROJECT_NAME} VERSION 1.0 QML_FILES ${MODULE_QMLs})
+    if(NOT "${MODULE_QMLs}" STREQUAL "")
+      qt_add_qml_module(${OUTPUT_NAME} URI ${PROJECT_NAME} VERSION 1.0 QML_FILES ${MODULE_QMLs})
+    endif()
     # Define target properties for Android with Qt 6 as:
     #  set_property(TARGET ${OUTPUT_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
     #         ${CMAKE_CURRENT_SOURCE_DIR}/android)
@@ -152,7 +184,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GCC
     endif()
   endif()
 endif()
-
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   list(APPEND SAFETY_FLAGS
     -Weverything
@@ -232,13 +263,7 @@ target_add_boost(${OUTPUT_NAME})
 #------------------------------------------------------------------------------------------------------
 # ADD TESTS BELOW...
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/test_${PROJECT_NAME}.cpp")
-  find_package(Boost REQUIRED COMPONENTS unit_test_framework)
-  add_executable(test_${PROJECT_NAME} "test/test_${PROJECT_NAME}.cpp")
-  target_include_directories(test_${PROJECT_NAME} PUBLIC ${${PROJECT_NAME}_INCLUDES})
-  target_link_libraries(test_${PROJECT_NAME} PRIVATE Boost::unit_test_framework)
-  add_test(test_${PROJECT_NAME} test_${PROJECT_NAME})
-endif()
+target_add_tests_from_folder(${OUTPUT_NAME} "test")
 
 #...
 #...
